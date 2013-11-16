@@ -1,0 +1,81 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
+using System.Windows.Shapes;
+using Microsoft.Kinect;
+using Microsoft.Kinect.Toolkit;
+
+namespace KinectSkeletal
+{
+    /// <summary>
+    /// Interaction logic for MainWindow.xaml
+    /// </summary>
+    public partial class MainWindow : Window
+    {
+        public MainWindow()
+        {
+            InitializeComponent();
+        }
+
+        //KinectSensor _sensor;
+       // KinectSensorChooser _sensorChooser = new KinectSensorChooser();
+        //KinectSensorChooserUI _sensorChooser = new KinectSensorChooserUI();
+        KinectSensor newSensor;
+
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            //    _sensorChooser.KinectChanged += new EventHandler<KinectChangedEventArgs>(_sensorChooser_KinectChanged);
+            //}
+
+            //void _sensorChooser_KinectChanged(object sender, KinectChangedEventArgs e)
+            //{
+            // KinectSensor oldSensor = (KinectSensor)e.OldSensor;
+            //StopKinect(oldSensor);
+
+            //KinectSensor newSensor = (KinectSensor)e.NewSensor;
+
+            if (KinectSensor.KinectSensors.Count > 0)
+            {
+                newSensor = KinectSensor.KinectSensors[0];
+
+
+                if (newSensor.Status == KinectStatus.Connected)
+                {
+                    newSensor.ColorStream.Enable();
+                    newSensor.DepthStream.Enable();
+                    newSensor.SkeletonStream.Enable();
+                    newSensor.AllFramesReady += new EventHandler<AllFramesReadyEventArgs>(newSensor_AllFramesReady);
+                    newSensor.Start();
+                }
+            }
+        }
+
+        void newSensor_AllFramesReady(object sender, AllFramesReadyEventArgs e)
+        {
+            //throw new NotImplementedException();
+        }
+
+        void StopKinect(KinectSensor sens)
+        {
+            if (sens != null)
+            {
+                sens.Stop();
+                sens.AudioSource.Stop();
+            }
+        }
+
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            StopKinect(newSensor);
+        }
+    }
+}
